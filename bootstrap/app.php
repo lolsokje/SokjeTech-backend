@@ -21,9 +21,9 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+ $app->withFacades();
 
-// $app->withEloquent();
+ $app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -61,9 +61,14 @@ $app->singleton(
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+ $app->middleware([
+     App\Http\Middleware\CorsMiddleware::class,
+ ]);
+
+ $app->routeMiddleware([
+     'auth' => App\Http\Middleware\Authenticate::class,
+     'client' => Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
+ ]);
 
 /*
 |--------------------------------------------------------------------------
@@ -76,9 +81,12 @@ $app->singleton(
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
+ $app->register(App\Providers\AppServiceProvider::class);
+ $app->register(App\Providers\AuthServiceProvider::class);
+ $app->register(App\Providers\EventServiceProvider::class);
+
+ $app->register(Laravel\Passport\PassportServiceProvider::class);
+ $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -91,22 +99,12 @@ $app->singleton(
 |
 */
 
-$app->router->group([
+ $app->router->group([
     'namespace' => 'App\Http\Controllers',
-], function ($router) {
+ ], function ($router) {
     require __DIR__.'/../routes/web.php';
-});
+ });
 
-$app->withFacades();
+ $app->configure('auth');
 
-$app->withEloquent();
-
-$app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
-    'client' => Laravel\Passport\Http\Middleware\CheckClientCredentials::class
-]);
-
-$app->register(Laravel\Passport\PassportServiceProvider::class);
-$app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
-
-return $app;
+ return $app;
