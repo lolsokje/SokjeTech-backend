@@ -38,3 +38,16 @@ $router->group([
 
     $router->post('delete', 'UniverseController@deleteUniverse');
 });
+
+$router->group([
+    'prefix' => 'series',
+    'middleware' => 'client'
+], function () use ($router) {
+    $router->post('create', 'SeriesController@createSeries');
+
+    $router->post('edit', 'SeriesController@editSeries');
+
+    $router->post('get-all', 'SeriesController@getSeries');
+
+    $router->post('delete', 'SeriesController@deleteSeries');
+});

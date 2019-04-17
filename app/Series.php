@@ -4,14 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Universe extends Model
+class Series extends Model
 {
     protected $fillable = [
-        'name',
+        'name'
     ];
 
     /**
-     * Universe owner
+     * User this series belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -21,12 +21,12 @@ class Universe extends Model
     }
 
     /**
-     * Series belonging to this universe.
+     * Universe this series belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function series()
+    public function universe()
     {
-        return $this->hasMany(Series::class);
+        return $this->belongsTo(Universe::class);
     }
 }

@@ -44,4 +44,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return $this->hasMany(Universe::class);
     }
+
+    /**
+     * Series owned by user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function series()
+    {
+        return $this->hasMany(Series::class);
+    }
 }
