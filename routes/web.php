@@ -14,3 +14,27 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->post('/users/register', 'UserController@register');
+
+$router->post('/users/login', 'UserController@login');
+
+$router->post('/users/logout', 'UserController@logout');
+
+$router->get('/users/user/{id}', [
+    'uses' => 'UserController@getUser',
+    'middleware' => 'client'
+]);
+
+$router->group([
+    'prefix' => 'universe',
+    'middleware' => 'client'
+], function () use ($router) {
+    $router->post('create', 'UniverseController@createUniverse');
+
+    $router->post('edit', 'UniverseController@editUniverse');
+
+    $router->post('get-all', 'UniverseController@getUniverses');
+
+    $router->post('delete', 'UniverseController@deleteUniverse');
+});
