@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\UserService;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,10 +15,12 @@ class UserController extends Controller
      *
      * @param Request $request
      *
+     * @param UserService $userService
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function register(Request $request)
+    public function register(Request $request, UserService $userService)
     {
         $this->validate($request, [
             'username' => 'required|unique:users',
@@ -26,23 +29,9 @@ class UserController extends Controller
             'email' => 'required'
         ]);
 
-        $user = User::create([
-            'username' => $request->username,
-            'password' => app('hash')->make($request->password),
-            'email' => $request->email,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name
-        ]);
+        $result = $userService->register($request);
 
-        if ($user) {
-            return response()->json([
-                'success' => true
-            ]);
-        }
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong during registration, please try again.'
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -50,38 +39,21 @@ class UserController extends Controller
      *
      * @param Request $request
      *
+     * @param UserService $userService
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function login(Request $request)
+    public function login(Request $request, UserService $userService)
     {
         $this->validate($request, [
             'username' => 'required',
             'password' => 'required'
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        $result = $userService->login($request);
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'A user with these credentials doesn\'t exist'
-            ]);
-        }
-
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wrong password'
-            ]);
-        }
-
-        $token = $user->createToken('Laravel Password Grand Client')->accessToken;
-        return response()->json([
-            'success' => true,
-            'token' => $token,
-            'user_id' => $user->id
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -89,14 +61,13 @@ class UserController extends Controller
      *
      * @param Request $request
      *
+     * @param UserService $userService
+     *
      * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
-    public function logout(Request $request)
+    public function logout(Request $request, UserService $userService)
     {
-        $value = $request->bearerToken();
-        $id = (new Parser())->parse($value)->getHeader('jti');
-        $token = $request->user()->tokens->find($id);
-        $token->revoke();
+        $userService->logout($request);
 
         return response('You\'ve successfully been logged out.', 200);
     }
