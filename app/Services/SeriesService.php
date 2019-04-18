@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 
 class SeriesService
 {
+    /**
+     * Creates a new series.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
     public function createSeries(Request $request)
     {
         $user = User::find($request->uid);
@@ -21,6 +28,12 @@ class SeriesService
             ];
         }
 
+        $series = Series::create([
+            'name' => $request->name
+        ]);
+
+        $series->user()->associate($user);
+
         if ($request->universe) {
             $universe = Universe::find($request->universe);
 
@@ -29,17 +42,9 @@ class SeriesService
                     'success' => false,
                     'message' => 'Universe not found'
                 ];
+            } else {
+                $series->universe()->associate($universe);
             }
-        }
-
-        $series = Series::create([
-            'name' => $request->name
-        ]);
-
-        $series->user()->associate($user);
-
-        if ($universe) {
-            $series->universe()->associate($universe);
         }
 
         $series->save();
@@ -49,6 +54,39 @@ class SeriesService
         ];
     }
 
+    /**
+     * Edits a series.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function editSeries(Request $request)
+    {
+        $series = Series::find($request->id);
+
+        if (!$series) {
+            return [
+                'success' => false,
+                'message' => 'Series not found.'
+            ];
+        }
+
+        $series->name = $request->name;
+        $series->save();
+
+        return [
+            'success' => true
+        ];
+    }
+
+    /**
+     * Returns all series
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
     public function getSeries(Request $request)
     {
         $user = User::find($request->id);
@@ -64,5 +102,30 @@ class SeriesService
 
         // TODO Return required extra data such as universe information.
         return $series;
+    }
+
+    /**
+     * Deletes a series.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function deleteSeries(Request $request)
+    {
+        $series = Series::find($request->id);
+
+        if (!$series) {
+            return [
+                'success' => false,
+                'message' => 'Series not found.'
+            ];
+        }
+
+        $series->delete();
+
+        return [
+            'success' => true
+        ];
     }
 }
