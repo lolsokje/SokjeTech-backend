@@ -69,13 +69,11 @@ class UniverseService
     /**
      * Returns all universes belonging to user.
      *
-     * @param Request $request
-     *
      * @return mixed
      */
-    public function getUniverses(Request $request)
+    public function getUniverses()
     {
-        $universes = Universe::where('user_id', $request->user_id)->get();
+        $universes = Universe::with('user:id,username')->get();
 
         return $universes;
     }

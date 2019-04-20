@@ -62,14 +62,9 @@ class SeriesController extends Controller
      * @param SeriesService $seriesService
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function getSeries(Request $request, SeriesService $seriesService)
     {
-        $this->validate($request, [
-            'id' => 'required'
-        ]);
-
         $result = $seriesService->getSeries($request);
 
         return response()->json($result);
