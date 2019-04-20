@@ -83,24 +83,12 @@ class SeriesService
     /**
      * Returns all series
      *
-     * @param Request $request
-     *
      * @return array
      */
-    public function getSeries(Request $request)
+    public function getSeries()
     {
-        $user = User::find($request->id);
+        $series = Series::with('universe:id,name', 'user:id,username')->get();
 
-        if (!$user) {
-            return [
-                'success' => false,
-                'message' => 'User not found'
-            ];
-        }
-
-        $series = $user->series;
-
-        // TODO Return required extra data such as universe information.
         return $series;
     }
 
