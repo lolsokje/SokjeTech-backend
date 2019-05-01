@@ -51,3 +51,10 @@ $router->group([
 
     $router->post('delete', 'SeriesController@deleteSeries');
 });
+
+$router->group([
+    'prefix' => 'team',
+    'middleware' => 'client'
+], function () use ($router) {
+    $router->post('create', 'TeamController@createTeam');
+});
